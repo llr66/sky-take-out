@@ -3,6 +3,7 @@ package com.sky.service.impl;
 import com.sky.constant.MessageConstant;
 import com.sky.constant.PasswordConstant;
 import com.sky.constant.StatusConstant;
+import com.sky.context.BaseContext;
 import com.sky.dto.EmployeeDTO;
 import com.sky.dto.EmployeeLoginDTO;
 import com.sky.entity.Employee;
@@ -28,9 +29,6 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Autowired
     private EmployeeMapper employeeMapper;
 
-    //注入请求的http数据,以便获取携带的JWT令牌
-    @Autowired
-    private HttpServletRequest httpServletRequest;
 
     /**
      * 员工登录
@@ -88,11 +86,9 @@ public class EmployeeServiceImpl implements EmployeeService {
         LocalDateTime createTime = LocalDateTime.now();
         LocalDateTime updateTime = LocalDateTime.now();
 
-        //解析密钥 ,并获取用户id
-        String JWT = httpServletRequest.getHeader("token");
-        Claims claims = JwtUtil.parseJWT("llrjava", JWT);
-        // 使用 Number 来处理类型转换
-        Long createUser = ((Number) claims.get("empId")).longValue();
+
+        // 获取之前拦截器处存入本线程存储空间的登录用户id
+        Long createUser = BaseContext.getCurrentId();
         //因为是第一次创建所以更新用户和创建用户应该是同一个人
         Long updateUser = createUser;
 
