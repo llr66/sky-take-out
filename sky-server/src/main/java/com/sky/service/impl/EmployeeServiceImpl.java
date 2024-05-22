@@ -77,7 +77,8 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public boolean save(EmployeeDTO employeeDTO) {
         //数据库中已有该用户
-        if(employeeMapper.getByUsername(employeeDTO.getUsername())!=null){
+        Employee byUsername = employeeMapper.getByUsername(employeeDTO.getUsername());
+        if(byUsername !=null){
             return false;
         }
         //先转换为Employee实体类再进行存储
@@ -95,7 +96,8 @@ public class EmployeeServiceImpl implements EmployeeService {
             //解析密钥 ,并获取用户id
             String JWT = httpServletRequest.getHeader("token");
             Claims claims = JwtUtil.parseJWT("llrjava", JWT);
-            Long createUser = (Long) claims.get("empId");
+            // 使用 Number 来处理类型转换
+            Long createUser = ((Number) claims.get("empId")).longValue();
             //因为是第一次创建所以更新用户和创建用户应该是同一个人
             Long updateUser=createUser;
 
@@ -114,7 +116,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                     .createTime(createTime)
                     .updateTime(updateTime)
                     //设置之前在jwt令牌中获取的创建人和修改人的id
-                    .createUser(createUser)
+                    .createUser( createUser)
                     .updateUser(updateUser).build();
 
             log.info("存储的用户为:",employee);
