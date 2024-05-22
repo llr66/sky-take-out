@@ -81,8 +81,8 @@ public class EmployeeController {
      */
     @PostMapping("/admin/employee")
     @ApiOperation(value = "添加员工")
-    public Result<String> save(EmployeeDTO employeeDTO){
-        log.info("接收到了需要添加的员工:",employeeDTO);
+    public Result<String> save(@RequestBody EmployeeDTO employeeDTO){
+        log.info("接收到了需要添加的员工: {}",employeeDTO);
         employeeService.save(employeeDTO);
         return Result.success();
     }

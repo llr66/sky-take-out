@@ -69,6 +69,11 @@ public class EmployeeServiceImpl implements EmployeeService {
         return employee;
     }
 
+    /**
+     *新增员工
+     * @param employeeDTO
+     * @return
+     */
     @Override
     public boolean save(EmployeeDTO employeeDTO) {
         //数据库中已有该用户
@@ -91,15 +96,24 @@ public class EmployeeServiceImpl implements EmployeeService {
             String JWT = httpServletRequest.getHeader("token");
             Claims claims = JwtUtil.parseJWT("llrjava", JWT);
             Long createUser = (Long) claims.get("empId");
+            //因为是第一次创建所以更新用户和创建用户应该是同一个人
             Long updateUser=createUser;
+
+            //构建employee对象,将数据封装存放
             Employee employee= Employee.builder()
                     .id(null)
                     .username(username)
                     .name(name)
-                    .password(PasswordConstant.DEFAULT_PASSWORD)
-                    .status(1)
+                    //将经过mdp5加密后的密码封装到实体类中去
+                    .password(DigestUtils.md5DigestAsHex(PasswordConstant.DEFAULT_PASSWORD.getBytes()))
+                    .phone(phone)
+                    .sex(sex)
+                    .idNumber(idNumber)
+                    //设置账号的状态,默认正常状态1表示正常,0表示异常
+                    .status(StatusConstant.ENABLE)
                     .createTime(createTime)
                     .updateTime(updateTime)
+                    //设置之前在jwt令牌中获取的创建人和修改人的id
                     .createUser(createUser)
                     .updateUser(updateUser).build();
 
