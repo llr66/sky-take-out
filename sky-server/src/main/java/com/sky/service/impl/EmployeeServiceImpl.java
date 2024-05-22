@@ -54,7 +54,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         //密码比对
 
         //对密码进行MD5加密转换
-        password=DigestUtils.md5DigestAsHex(password.getBytes());
+        password = DigestUtils.md5DigestAsHex(password.getBytes());
         if (!password.equals(employee.getPassword())) {
             //密码错误
             throw new PasswordErrorException(MessageConstant.PASSWORD_ERROR);
@@ -70,59 +70,54 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     /**
-     *新增员工
+     * 新增员工
+     *
      * @param employeeDTO
      * @return
      */
     @Override
     public boolean save(EmployeeDTO employeeDTO) {
-        //数据库中已有该用户
-        Employee byUsername = employeeMapper.getByUsername(employeeDTO.getUsername());
-        if(byUsername !=null){
-            return false;
-        }
+
         //先转换为Employee实体类再进行存储
-        else {
+        //解析响应层传递过来的EmployeeDTO类
+        String username = employeeDTO.getUsername();
+        String name = employeeDTO.getName();
+        String phone = employeeDTO.getPhone();
+        String sex = employeeDTO.getSex();
+        String idNumber = employeeDTO.getIdNumber();
+        LocalDateTime createTime = LocalDateTime.now();
+        LocalDateTime updateTime = LocalDateTime.now();
 
-            //解析响应层传递过来的EmployeeDTO类
-            String username = employeeDTO.getUsername();
-            String name = employeeDTO.getName();
-            String phone = employeeDTO.getPhone();
-            String sex = employeeDTO.getSex();
-            String idNumber = employeeDTO.getIdNumber();
-            LocalDateTime createTime = LocalDateTime.now();
-            LocalDateTime updateTime = LocalDateTime.now();
+        //解析密钥 ,并获取用户id
+        String JWT = httpServletRequest.getHeader("token");
+        Claims claims = JwtUtil.parseJWT("llrjava", JWT);
+        // 使用 Number 来处理类型转换
+        Long createUser = ((Number) claims.get("empId")).longValue();
+        //因为是第一次创建所以更新用户和创建用户应该是同一个人
+        Long updateUser = createUser;
 
-            //解析密钥 ,并获取用户id
-            String JWT = httpServletRequest.getHeader("token");
-            Claims claims = JwtUtil.parseJWT("llrjava", JWT);
-            // 使用 Number 来处理类型转换
-            Long createUser = ((Number) claims.get("empId")).longValue();
-            //因为是第一次创建所以更新用户和创建用户应该是同一个人
-            Long updateUser=createUser;
+        //构建employee对象,将数据封装存放
+        Employee employee = Employee.builder()
+                .id(null)
+                .username(username)
+                .name(name)
+                //将经过mdp5加密后的密码封装到实体类中去
+                .password(DigestUtils.md5DigestAsHex(PasswordConstant.DEFAULT_PASSWORD.getBytes()))
+                .phone(phone)
+                .sex(sex)
+                .idNumber(idNumber)
+                //设置账号的状态,默认正常状态1表示正常,0表示异常
+                .status(StatusConstant.ENABLE)
+                .createTime(createTime)
+                .updateTime(updateTime)
+                //设置之前在jwt令牌中获取的创建人和修改人的id
+                .createUser(createUser)
+                .updateUser(updateUser).build();
 
-            //构建employee对象,将数据封装存放
-            Employee employee= Employee.builder()
-                    .id(null)
-                    .username(username)
-                    .name(name)
-                    //将经过mdp5加密后的密码封装到实体类中去
-                    .password(DigestUtils.md5DigestAsHex(PasswordConstant.DEFAULT_PASSWORD.getBytes()))
-                    .phone(phone)
-                    .sex(sex)
-                    .idNumber(idNumber)
-                    //设置账号的状态,默认正常状态1表示正常,0表示异常
-                    .status(StatusConstant.ENABLE)
-                    .createTime(createTime)
-                    .updateTime(updateTime)
-                    //设置之前在jwt令牌中获取的创建人和修改人的id
-                    .createUser( createUser)
-                    .updateUser(updateUser).build();
-
-            log.info("存储的用户为:",employee);
-            //调用mapper层存储数据
-            employeeMapper.save(employee);
-            return true;
-        }
+        log.info("存储的用户为:", employee);
+        //调用mapper层存储数据
+        employeeMapper.save(employee);
+        return true;
     }
+
 }
