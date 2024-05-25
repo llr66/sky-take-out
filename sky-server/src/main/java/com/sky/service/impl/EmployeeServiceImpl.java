@@ -19,6 +19,7 @@ import com.sky.service.EmployeeService;
 import com.sky.utils.JwtUtil;
 import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
@@ -165,6 +166,29 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public Employee getById(Long id) {
         Employee employee=employeeMapper.getById(id);
+        //设置密码屏蔽,防止密码外泄
+        employee.setPassword("****");
         return employee;
+    }
+
+    /**
+     * 编辑员工信息
+     * @param employeeDTO
+     */
+    @Override
+    public void updata(EmployeeDTO employeeDTO) {
+        Employee employee=new Employee();
+
+        //进行对象属性拷贝转换
+        BeanUtils.copyProperties(employeeDTO,employee);
+
+        //更新更新时间和更新用户
+        employee.setUpdateTime(LocalDateTime.now());
+
+        //使用线程空间工具类获取使用用户的id
+        employee.setUpdateUser(BaseContext.getCurrentId());
+
+        employeeMapper.update(employee);
+
     }
 }

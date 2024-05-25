@@ -128,5 +128,18 @@ public class EmployeeController {
         return Result.success(employee);
     }
 
+    /**
+     * 编辑员工信息
+     * @param employeeDTO
+     * @return
+     */
+    @PutMapping
+    @ApiOperation("编辑员工信息")
+    public Result updata(@RequestBody EmployeeDTO employeeDTO){
+        log.info("需要修改的员工数据:{}",employeeDTO);
+        employeeService.updata(employeeDTO);
+        return Result.success();
+    }
+
 
 }
