@@ -53,7 +53,6 @@ public class EmployeeServiceImpl implements EmployeeService {
             //账号不存在
             throw new AccountNotFoundException(MessageConstant.ACCOUNT_NOT_FOUND);
         }
-
         //密码比对
 
         //对密码进行MD5加密转换
@@ -156,5 +155,16 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .status(status).build();
         employeeMapper.update(employee);
 
+    }
+
+    /**
+     * 根据id查询员工
+     * @param id
+     * @return
+     */
+    @Override
+    public Employee getById(Long id) {
+        Employee employee=employeeMapper.getById(id);
+        return employee;
     }
 }
