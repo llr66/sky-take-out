@@ -149,7 +149,12 @@ public class EmployeeServiceImpl implements EmployeeService {
      * @param id
      */
     @Override
-    public void startOrStop(Integer status, Integer id) {
-        employeeMapper.startOrStop(status,id);
+    public void startOrStop(Integer status, Long id) {
+        //将数据封装进Employee后再执行交给数据库更新,这样能提高代码1的复用性
+        Employee employee = Employee.builder()
+                .id(id)
+                .status(status).build();
+        employeeMapper.update(employee);
+
     }
 }

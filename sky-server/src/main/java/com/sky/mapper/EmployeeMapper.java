@@ -33,10 +33,8 @@ public interface EmployeeMapper {
     Page<Employee> pageQuery(EmployeePageQueryDTO employeePageQueryDTO);
 
     /**
-     *  启用,禁用员工账户
-     * @param status
-     * @param id
+     * 根据id更新数据库用户信息
+     * @param employee
      */
-    @Update("update employee set status=#{status} where id =#{id}")
-    void startOrStop(Integer status, Integer id);
+    void update(Employee employee);
 }
