@@ -5,6 +5,7 @@ import com.sky.dto.EmployeePageQueryDTO;
 import com.sky.entity.Employee;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 @Mapper
 public interface EmployeeMapper {
@@ -30,4 +31,12 @@ public interface EmployeeMapper {
      * @return
      */
     Page<Employee> pageQuery(EmployeePageQueryDTO employeePageQueryDTO);
+
+    /**
+     *  启用,禁用员工账户
+     * @param status
+     * @param id
+     */
+    @Update("update employee set status=#{status} where id =#{id}")
+    void startOrStop(Integer status, Integer id);
 }

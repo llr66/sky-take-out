@@ -142,4 +142,14 @@ public class EmployeeServiceImpl implements EmployeeService {
         //将数据封装为PageResult,并返回给controller层
         return new PageResult(total,records);
     }
+
+    /**
+     * 启用、禁用员工账号
+     * @param status
+     * @param id
+     */
+    @Override
+    public void startOrStop(Integer status, Integer id) {
+        employeeMapper.startOrStop(status,id);
+    }
 }
