@@ -1,16 +1,20 @@
 package com.sky.service.impl;
 
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import com.sky.constant.MessageConstant;
 import com.sky.constant.PasswordConstant;
 import com.sky.constant.StatusConstant;
 import com.sky.context.BaseContext;
 import com.sky.dto.EmployeeDTO;
 import com.sky.dto.EmployeeLoginDTO;
+import com.sky.dto.EmployeePageQueryDTO;
 import com.sky.entity.Employee;
 import com.sky.exception.AccountLockedException;
 import com.sky.exception.AccountNotFoundException;
 import com.sky.exception.PasswordErrorException;
 import com.sky.mapper.EmployeeMapper;
+import com.sky.result.PageResult;
 import com.sky.service.EmployeeService;
 import com.sky.utils.JwtUtil;
 import io.jsonwebtoken.Claims;
@@ -21,6 +25,7 @@ import org.springframework.util.DigestUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -116,4 +121,25 @@ public class EmployeeServiceImpl implements EmployeeService {
         return true;
     }
 
+    /**
+     * 分页查询
+     * @param employeePageQueryDTO
+     * @return
+     */
+    @Override
+    public PageResult pageQuery(EmployeePageQueryDTO employeePageQueryDTO) {
+        //select * from employee limit 0,10
+        //开始分页查询
+        PageHelper.startPage(employeePageQueryDTO.getPage(),employeePageQueryDTO.getPageSize());
+
+        //调用mapper层返回分页的员工数据,并且使用分页插件对象Page进行接收,泛型就写接收的实体类
+        Page<Employee> page= employeeMapper.pageQuery(employeePageQueryDTO);
+
+        //从这个分页插件page类去获取PageResult属性值:页面数量
+        Long total=page.getTotal();
+        List<Employee> records=page.getResult();
+
+        //将数据封装为PageResult,并返回给controller层
+        return new PageResult(total,records);
+    }
 }
