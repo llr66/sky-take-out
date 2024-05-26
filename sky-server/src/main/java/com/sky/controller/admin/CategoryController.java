@@ -8,9 +8,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @Slf4j
@@ -34,4 +32,17 @@ public class CategoryController {
         return Result.success(pageResult);
     }
 
+    /**
+     * 启用、禁用分类
+     * @param status
+     * @param id
+     * @return
+     */
+    @PostMapping("/status/{status}")
+    @ApiOperation("启用、禁用分类")
+    public Result<String> startOrStop(@PathVariable Integer status,Long id){
+        log.info("接收到了id为{}的1分类的状态申请:{}",id,status);
+        categoryService.startOrStop(status,id);
+        return Result.success();
+    }
 }

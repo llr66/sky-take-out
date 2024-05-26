@@ -39,7 +39,19 @@ public class CategoryServiceImpl implements CategoryService {
 
         //将数据封装为PageResult,并返回给controller层
         return new PageResult(total,records);
+    }
 
-
+    /**
+     * 启用、禁用分类
+     * @param status
+     * @param id
+     */
+    @Override
+    public void startOrStop(Integer status, Long id) {
+        Category category = Category.builder()
+                .status(status)
+                .id(id)
+                .build();
+        categoryMapper.updata(category);
     }
 }
