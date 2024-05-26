@@ -109,11 +109,12 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .idNumber(idNumber)
                 //设置账号的状态,默认正常状态1表示正常,0表示异常
                 .status(StatusConstant.ENABLE)
-                .createTime(createTime)
-                .updateTime(updateTime)
+                //.createTime(createTime)
+                //.updateTime(updateTime)
                 //设置之前在jwt令牌中获取的创建人和修改人的id
-                .createUser(createUser)
-                .updateUser(updateUser).build();
+                //.createUser(createUser)
+                //.updateUser(updateUser)
+                .build();
 
         log.info("存储的用户为:", employee);
         //调用mapper层存储数据
@@ -183,10 +184,10 @@ public class EmployeeServiceImpl implements EmployeeService {
         BeanUtils.copyProperties(employeeDTO,employee);
 
         //更新更新时间和更新用户
-        employee.setUpdateTime(LocalDateTime.now());
+        //employee.setUpdateTime(LocalDateTime.now());
 
         //使用线程空间工具类获取使用用户的id
-        employee.setUpdateUser(BaseContext.getCurrentId());
+        //employee.setUpdateUser(BaseContext.getCurrentId());
 
         employeeMapper.update(employee);
 
