@@ -1,10 +1,12 @@
 package com.sky.service;
 
+import com.sky.dto.CategoryDTO;
 import com.sky.dto.CategoryPageQueryDTO;
+import com.sky.entity.Category;
 import com.sky.result.PageResult;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public interface CategoryService {
@@ -22,4 +24,30 @@ public interface CategoryService {
      * @param id
      */
     void startOrStop(Integer status, Long id);
+
+    /**
+     *修改分类
+     * @param categoryDTO
+     */
+    void updata(CategoryDTO categoryDTO);
+
+    /**
+     * 根据id删除分类
+     * @param id
+     */
+    void delete(Long id);
+
+    /**
+     * 新增分类
+     * @param categoryDTO
+     */
+    void add(CategoryDTO categoryDTO);
+
+    /**
+     * 根据类型查询分类
+     *
+     * @param type
+     * @return
+     */
+    List<Category> getByType(Integer type);
 }
