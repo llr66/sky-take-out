@@ -31,6 +31,7 @@ public class DishController {
     @ApiOperation("菜品分页查询")
     public Result<PageResult> Page(DishPageQueryDTO dishPageQueryDTO) {
         log.info("接收到了分页请求:{}", dishPageQueryDTO);
+        log.info("传入Mapper方法的dishPageQueryDTO:{}",dishPageQueryDTO);
         PageResult pageResult = dishService.Page(dishPageQueryDTO);
         return Result.success(pageResult);
     }
