@@ -3,6 +3,7 @@ package com.sky.controller.admin;
 import com.sky.result.Result;
 import com.sky.utils.AliOssUtil;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,6 +28,7 @@ public class CommonController {
     AliOssUtil aliOssUtil;
 
     @PostMapping("/upload")
+    @ApiOperation("上传文件")
     public Result<String> upload(@RequestBody MultipartFile file){
         log.info("接收到上传文件:{}",file);
         //将文件对象转换为字节数组,并用uuid作为随机名称填入参数(防止文件重名)
