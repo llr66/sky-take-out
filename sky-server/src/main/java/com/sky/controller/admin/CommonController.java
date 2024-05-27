@@ -40,7 +40,7 @@ public class CommonController {
 
             //调用工具类方法上传文件并返回文件的url
             String url = aliOssUtil.upload(file.getBytes(), fileNme);
-
+            log.info("响应的url:{}",url);
             return Result.success(url);
         } catch (IOException e) {
             log.error("文件上传失败:{}",e);
