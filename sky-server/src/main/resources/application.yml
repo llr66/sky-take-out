@@ -35,7 +35,7 @@ logging:
 sky:
   #自定义的阿里云oss配置信息
   alioss:
-      endpoint: https://oss-cn-guangzhou.aliyuncs.com
+      endpoint: oss-cn-guangzhou.aliyuncs.com
       accessKeyId: LTAI5tBme6X8tmKvTHWHE9or
       accessKeySecret: MIbODHTBzOJoC2wJRNZ450c0lWEPT9
       bucketName: llrbucket
