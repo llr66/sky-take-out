@@ -23,6 +23,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -109,5 +110,24 @@ public class DishServiceImpl implements DishService {
         dishMapper.deleteByIds(idList);
         //删除菜品相关的口味
         dishFlavorMapper.deletByDishIds(idList);
+    }
+
+    /**
+     * 根据id查询菜品
+     * @param id
+     * @return
+     */
+    @Override
+    public DishVO getById(Long id) {
+        //查询菜品表的菜品数据
+        Dish dish=dishMapper.getById(id);
+        //查询菜品口味表中,菜品关联的口味
+        List<DishFlavor> dishFlavors=dishFlavorMapper.getByDishId(id);
+        DishVO dishVO=new DishVO();
+        //利用工具类进行数据拷贝
+        BeanUtils.copyProperties(dish,dishVO);
+        dishVO.setFlavors(dishFlavors);
+        return dishVO;
+
     }
 }
