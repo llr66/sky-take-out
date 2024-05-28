@@ -111,12 +111,12 @@ public class DishServiceImpl implements DishService {
         //删除菜品相关的口味
         dishFlavorMapper.deletByDishIds(idList);
     }
-
     /**
      * 根据id查询菜品
      * @param id
      * @return
      */
+
     @Override
     public DishVO getById(Long id) {
         //查询菜品表的菜品数据
@@ -128,6 +128,31 @@ public class DishServiceImpl implements DishService {
         BeanUtils.copyProperties(dish,dishVO);
         dishVO.setFlavors(dishFlavors);
         return dishVO;
+
+    }
+
+    /**
+     * 修改菜品
+     * @param dishDTO
+     */
+    @Override
+    public void updata(DishDTO dishDTO) {
+        Dish dish=new Dish();
+        //拷贝传入数据,记得加上在Mapper方法标签将更改时间的操作交给AOP处理
+        BeanUtils.copyProperties(dishDTO,dish);
+        //对Dish表行数据进行修改
+        dishMapper.upData(dish);
+        //对口味Dish_flavor表中的数据进行修改
+        List<DishFlavor> flavors = dishDTO.getFlavors();
+
+        Long dishId=dishDTO.getId();
+        //删除原有口味数据
+        dishFlavorMapper.delete(dishId);
+        //添加修改后的口味数据,(记得给口味数据id赋值)
+        for (DishFlavor flavor : flavors) {
+            flavor.setDishId(dishId);
+        }
+        dishFlavorMapper.add(flavors);
 
     }
 }
