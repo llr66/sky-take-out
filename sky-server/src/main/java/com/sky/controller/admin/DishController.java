@@ -11,6 +11,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 /*
     菜品相关接口
  */
@@ -47,6 +51,28 @@ public class DishController {
     {
         log.info("接收到了菜品添加请求:{}",dishDTO);
         dishService.addWithFlavor(dishDTO);
+        return Result.success();
+    }
+
+    /**
+     * 批量删除菜品
+     * @param ids
+     * @return
+     */
+    @DeleteMapping
+    @ApiOperation("批量删除菜品")
+    public Result<String> deleteByIds(String ids){
+        log.info("接收到了删除请求id:{}",ids);
+        //将数据转换为Integer型集合
+        String[] split = ids.split(",");
+        List<Long> idList=new ArrayList<>();
+        for (String s : split) {
+            idList.add(Long.valueOf(s)
+            );
+        }
+        log.info("转化后的id集合:{}",idList);
+        dishService.deleteByIds(idList);
+
         return Result.success();
     }
 }

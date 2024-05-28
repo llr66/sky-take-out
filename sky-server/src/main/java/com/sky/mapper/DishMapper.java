@@ -10,6 +10,8 @@ import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
+import java.util.List;
+
 @Mapper
 public interface DishMapper {
 
@@ -34,4 +36,18 @@ public interface DishMapper {
      */
     @AutoFill(value = OperationType.INSERT)
     void add(Dish dish);
+
+    /**
+     * 根据id批量获取菜品信息
+     * @param idList
+     * @return
+     */
+    List<Dish> getByIds(List<Long> idList);
+
+    /**
+     * 根据id批量删除菜品
+     * @param idList
+     */
+    void deleteByIds(List<Long> idList);
+
 }
