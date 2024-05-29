@@ -103,4 +103,18 @@ public class DishController {
         dishService.updata(dishDTO);
         return Result.success();
     }
+
+    /**
+     * 菜品起售停售
+     * @param id
+     * @param status
+     * @return
+     */
+    @PostMapping("/status/{status}")
+    @ApiOperation("菜品起售停售")
+    public Result<String> upDataStatus(Long id,@PathVariable Integer status ){
+        log.info("接收到菜品状态更新请求:id{},status{}",id,status);
+        dishService.upDataStatus(id,status);
+        return Result.success();
+    }
 }

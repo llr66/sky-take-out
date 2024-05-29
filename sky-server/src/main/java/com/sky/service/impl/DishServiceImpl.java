@@ -155,4 +155,17 @@ public class DishServiceImpl implements DishService {
         dishFlavorMapper.add(flavors);
 
     }
+
+    /**
+     * 菜品起售停售
+     * @param id
+     * @param status
+     */
+    @Override
+    public void upDataStatus(Long id, Integer status) {
+        Dish dish = Dish.builder()
+                .id(id)
+                .status(status).build();
+        dishMapper.upData(dish);
+    }
 }
