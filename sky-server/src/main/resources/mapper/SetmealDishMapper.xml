@@ -9,7 +9,7 @@
         </foreach>
 
     </insert>
-    <delete id="deleteBySetmealId">
+    <delete id="deleteBySetmealIds">
         Delete from sky_take_out.setmeal_dish where setmeal_id in
         <foreach collection="idList" item="setmealId" open="(" separator="," close=")">
             #{setmealId}

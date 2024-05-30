@@ -90,7 +90,7 @@ public class SetmealServiceImpl implements SetmealService {
         //删除套餐表行数据
         setmealMapper.deleteByIds(idList);
         //删除套餐菜品关系中间表行数据
-        setmealDishMapper.deleteBySetmealId(idList);
+        setmealDishMapper.deleteBySetmealIds(idList);
     }
 
     /**
@@ -112,5 +112,31 @@ public class SetmealServiceImpl implements SetmealService {
         setmealVO.setSetmealDishes(setmealDishes);
 
         return setmealVO;
+    }
+
+    /**
+     * 修改套餐
+     * @param setmealDTO
+     */
+    @Override
+    public void updata(SetmealDTO setmealDTO) {
+        //修改套餐表数据(记得给Mapper方法打上注解交给AOP代理)
+        Setmeal setmeal=new Setmeal();
+        BeanUtils.copyProperties(setmealDTO,setmeal);
+        setmealMapper.updata(setmeal);
+        //修改套餐菜品数据
+
+        List<SetmealDish> setmealDishes=setmealDTO.getSetmealDishes();
+        Long setmealId=setmealDTO.getId();
+        //给加上setmealID属性
+        for (SetmealDish setmealDish : setmealDishes) {
+            setmealDish.setSetmealId(setmealId);
+        }
+
+        log.info("删除原先套餐菜品关系id:{}",setmealId);
+        //删除原来的套餐菜品关系数据
+        setmealDishMapper.deleteBySetmealId(setmealId);
+        //更新添加套餐菜品关系数据
+        setmealDishMapper.add(setmealDishes);
     }
 }
