@@ -9,6 +9,12 @@
         </foreach>
 
     </insert>
+    <delete id="deleteBySetmealId">
+        Delete from sky_take_out.setmeal_dish where setmeal_id in
+        <foreach collection="idList" item="setmealId" open="(" separator="," close=")">
+            #{setmealId}
+        </foreach>
+    </delete>
 
     <select id="getByDishIds" resultType="com.sky.entity.SetmealDish">
         select * from sky_take_out.setmeal_dish where dish_id
