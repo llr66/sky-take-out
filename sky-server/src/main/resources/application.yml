@@ -27,6 +27,8 @@ mybatis:
 logging:
   level:
     com:
+      #spring事务管理日志
+      org.springframework.jdbc.support.JdbcTransactionManager: debug
       sky:
         mapper: debug
         service: info

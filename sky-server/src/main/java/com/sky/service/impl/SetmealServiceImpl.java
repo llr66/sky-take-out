@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +29,7 @@ public class SetmealServiceImpl implements SetmealService {
     @Autowired
     SetmealDishMapper setmealDishMapper;
 
+    @Transactional(rollbackFor = Exception.class)
     /**
      * 新增套餐
      * @param setmealDTO
@@ -72,7 +74,7 @@ public class SetmealServiceImpl implements SetmealService {
         return pageResult;
 
     }
-
+    @Transactional(rollbackFor = Exception.class)
     /**
      * 批量删除套餐
      * @param idList
@@ -114,10 +116,12 @@ public class SetmealServiceImpl implements SetmealService {
         return setmealVO;
     }
 
+
     /**
      * 修改套餐
      * @param setmealDTO
      */
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void updata(SetmealDTO setmealDTO) {
         //修改套餐表数据(记得给Mapper方法打上注解交给AOP代理)

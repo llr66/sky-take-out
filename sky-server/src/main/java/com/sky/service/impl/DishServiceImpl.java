@@ -22,6 +22,7 @@ import net.bytebuddy.implementation.bytecode.Throw;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,8 +38,10 @@ public class DishServiceImpl implements DishService {
 
     @Autowired
     DishFlavorMapper dishFlavorMapper;
+
     /**
      * 菜品分页查询
+     *
      * @param dishPageQueryDTO
      * @return
      */
@@ -48,26 +51,28 @@ public class DishServiceImpl implements DishService {
         PageHelper.startPage(dishPageQueryDTO.getPage(), dishPageQueryDTO.getPageSize());
 
         //调用mapper层返回分页的员工数据,并且使用分页插件对象Page进行接收,泛型就写接收的实体类
-        Page<DishVO> page=dishMapper.pageQuery(dishPageQueryDTO);
+        Page<DishVO> page = dishMapper.pageQuery(dishPageQueryDTO);
 
         //从这个分页插件page类去获取PageResult属性值:页面数量
-        Long total=page.getTotal();
-        List<DishVO> records=page.getResult();
+        Long total = page.getTotal();
+        List<DishVO> records = page.getResult();
 
         //将数据封装为PageResult,并返回给controller层
-        return new PageResult(total,records);
+        return new PageResult(total, records);
     }
 
     /**
      * 新增菜品
+     *
      * @param dishDTO
      */
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void addWithFlavor(DishDTO dishDTO) {
         //1,对于菜品表进行添加
-        Dish dish=new Dish();
-        BeanUtils.copyProperties(dishDTO,dish);
-        log.info("往数据库中添加菜品数据:{}",dish);
+        Dish dish = new Dish();
+        BeanUtils.copyProperties(dishDTO, dish);
+        log.info("往数据库中添加菜品数据:{}", dish);
         //记得添加注解让其AOP进行代理去添加日期
         dishMapper.add(dish);
 
@@ -75,11 +80,11 @@ public class DishServiceImpl implements DishService {
         //菜品存入数据库中后再去获取,而要实现这一功能,需要在对于sql的xml标签上加上属性<insert id="add" useGeneratedKeys="true" keyProperty="id">
         //菜品数据储存后主键回显
         Long id = dish.getId();
-        log.info("菜品主键回显:{}",id);
+        log.info("菜品主键回显:{}", id);
 
         //2,对菜品口味表进行添加
         //获取口味数据
-        List<DishFlavor> dishFlavorList=dishDTO.getFlavors();
+        List<DishFlavor> dishFlavorList = dishDTO.getFlavors();
         //遍历集合为其dishId属性赋值
         for (DishFlavor dishFlavor : dishFlavorList) {
             dishFlavor.setDishId(id);
@@ -89,30 +94,34 @@ public class DishServiceImpl implements DishService {
 
     /**
      * 批量删除菜品
+     *
      * @param idList
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void deleteByIds(List<Long> idList) {
 
-        List<Dish> dishs=dishMapper.getByIds(idList);
+        List<Dish> dishs = dishMapper.getByIds(idList);
         //删除前进行判断菜品状态是否为起售中
         for (Dish dish : dishs) {
-            if (dish.getStatus()== StatusConstant.ENABLE){
+            if (dish.getStatus() == StatusConstant.ENABLE) {
                 throw new BaseException(MessageConstant.DISH_ON_SALE);
             }
         }
         //删除前进行判断是否被套餐关联
-        List<SetmealDish> setmealDishes=setmealDishMapper.getByDishIds(idList);
-        if (setmealDishes.size()>0){
-         throw new BaseException(MessageConstant.DISH_BE_RELATED_BY_SETMEAL);
+        List<SetmealDish> setmealDishes = setmealDishMapper.getByDishIds(idList);
+        if (setmealDishes.size() > 0) {
+            throw new BaseException(MessageConstant.DISH_BE_RELATED_BY_SETMEAL);
         }
         //删除菜品
         dishMapper.deleteByIds(idList);
         //删除菜品相关的口味
         dishFlavorMapper.deletByDishIds(idList);
     }
+
     /**
      * 根据id查询菜品
+     *
      * @param id
      * @return
      */
@@ -120,32 +129,35 @@ public class DishServiceImpl implements DishService {
     @Override
     public DishVO getById(Long id) {
         //查询菜品表的菜品数据
-        Dish dish=dishMapper.getById(id);
+        Dish dish = dishMapper.getById(id);
         //查询菜品口味表中,菜品关联的口味
-        List<DishFlavor> dishFlavors=dishFlavorMapper.getByDishId(id);
-        DishVO dishVO=new DishVO();
+        List<DishFlavor> dishFlavors = dishFlavorMapper.getByDishId(id);
+        DishVO dishVO = new DishVO();
         //利用工具类进行数据拷贝
-        BeanUtils.copyProperties(dish,dishVO);
+        BeanUtils.copyProperties(dish, dishVO);
         dishVO.setFlavors(dishFlavors);
         return dishVO;
 
     }
 
+
     /**
      * 修改菜品
+     *
      * @param dishDTO
      */
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void updata(DishDTO dishDTO) {
-        Dish dish=new Dish();
+        Dish dish = new Dish();
         //拷贝传入数据,记得加上在Mapper方法标签将更改时间的操作交给AOP处理
-        BeanUtils.copyProperties(dishDTO,dish);
+        BeanUtils.copyProperties(dishDTO, dish);
         //对Dish表行数据进行修改
         dishMapper.upData(dish);
         //对口味Dish_flavor表中的数据进行修改
         List<DishFlavor> flavors = dishDTO.getFlavors();
 
-        Long dishId=dishDTO.getId();
+        Long dishId = dishDTO.getId();
         //删除原有口味数据
         dishFlavorMapper.delete(dishId);
         //添加修改后的口味数据,(记得给口味数据id赋值)
@@ -163,6 +175,7 @@ public class DishServiceImpl implements DishService {
 
     /**
      * 菜品起售停售
+     *
      * @param id
      * @param status
      */
@@ -176,12 +189,13 @@ public class DishServiceImpl implements DishService {
 
     /**
      * 根据分类id查询菜品
+     *
      * @param categoryId
      * @return
      */
     @Override
     public List<Dish> getByCategoryId(Long categoryId) {
-        List<Dish> dishes=dishMapper.getByCategoryId(categoryId);
+        List<Dish> dishes = dishMapper.getByCategoryId(categoryId);
         return dishes;
     }
 }
