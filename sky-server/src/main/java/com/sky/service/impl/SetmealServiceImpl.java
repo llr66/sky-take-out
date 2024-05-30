@@ -12,11 +12,13 @@ import com.sky.mapper.SetmealDishMapper;
 import com.sky.mapper.SetmealMapper;
 import com.sky.result.PageResult;
 import com.sky.service.SetmealService;
+import com.sky.vo.SetmealVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 @Slf4j
 @Service
@@ -89,5 +91,26 @@ public class SetmealServiceImpl implements SetmealService {
         setmealMapper.deleteByIds(idList);
         //删除套餐菜品关系中间表行数据
         setmealDishMapper.deleteBySetmealId(idList);
+    }
+
+    /**
+     * 根据id查询套餐
+     * @param id
+     * @return
+     */
+    @Override
+    public SetmealVO getById(Long id) {
+        //获取套餐表数据
+        Setmeal setmeal=setmealMapper.getById(id);
+        log.info("查询到的套餐数据:{}",setmeal);
+        //获取套餐菜品关系表数据
+        List<SetmealDish> setmealDishes=setmealDishMapper.getBySetmealId(id);
+        log.info("查询到的套餐菜品关系数据:{}",setmealDishes);
+
+        SetmealVO setmealVO=new SetmealVO();
+        BeanUtils.copyProperties(setmeal,setmealVO);
+        setmealVO.setSetmealDishes(setmealDishes);
+
+        return setmealVO;
     }
 }
