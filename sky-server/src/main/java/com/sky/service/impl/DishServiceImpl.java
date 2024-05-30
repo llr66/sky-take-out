@@ -149,11 +149,16 @@ public class DishServiceImpl implements DishService {
         //删除原有口味数据
         dishFlavorMapper.delete(dishId);
         //添加修改后的口味数据,(记得给口味数据id赋值)
+
+        // 检查口味列表是否为空，如果为空则直接返回
+        if (flavors == null || flavors.isEmpty()) {
+            return;
+        }
+
         for (DishFlavor flavor : flavors) {
             flavor.setDishId(dishId);
         }
         dishFlavorMapper.add(flavors);
-
     }
 
     /**

@@ -4,6 +4,7 @@
 <mapper namespace="com.sky.mapper.DishFlavorMapper">
 
     <insert id="add">
+
         Insert Into  sky_take_out.dish_flavor(dish_id, name, value)
         values
             <foreach collection="dishFlavorList" item="dishFlavor" separator="," >
